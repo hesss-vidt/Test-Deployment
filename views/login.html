@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Login Dashboard</title>
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1e293b, #3b82f6);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.login-btn {
+    background: #22c55e;
+    color: white;
+}
+
+.guest-btn {
+    background: #64748b;
+    color: white;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Login Dashboard</h2>
+
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+
+    <button class="login-btn" onclick="login()">Login</button>
+    <button class="guest-btn" onclick="guest()">Masuk sebagai Guest</button>
+</div>
+
+<script>
+    function login2(){
+        alert("Halo Boss");
+    }
+async function login() {
+    const email = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    try {
+        // ✅ FETCH 1 → LOGIN
+        const resLogin = await fetch("http://localhost:3000/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password })
+        });
+        let {message} = resLogin;
+        const dataLogin = await resLogin.json();
+        
+        if (!resLogin.ok) {
+            alert(dataLogin.message || "Login gagal");
+            return;
+        }
+
+        const token = dataLogin.token;
+
+        // ✅ simpan token
+        localStorage.setItem("token", token);
+
+        // ✅ FETCH 2 → DASHBOARD (ADMIN MODE)
+        const resDashboard = await fetch("http://localhost:3000/dashboard", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        // ✅ ambil HTML dari sendFile
+        const html = await resDashboard.text();
+
+        // ✅ render halaman
+        document.open();
+        document.write(html);
+        document.close();
+
+    } catch (err) {
+        console.error(err);
+        alert("Terjadi error");
+    }
+}
+
+
+// ✅ MODE GUEST (tanpa login)
+async function guest() {
+    try {
+        // ✅ FETCH TANPA HEADER
+        const res = await fetch("http://localhost:3000/dashboard");
+
+        const html = await res.text();
+
+        document.open();
+        document.write(html);
+        document.close();
+
+    } catch (err) {
+        console.error(err);
+        alert("Error masuk guest");
+    }
+}
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Berita</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f6f9;
+        }
+
+        header {
+            background: #1e293b;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav {
+            display: flex;
+            background: #334155;
+        }
+
+        nav button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: #334155;
+            color: white;
+            cursor: pointer;
+        }
+
+        nav button:hover {
+            background: #1e293b;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+        }
+
+        button.action {
+            padding: 6px 10px;
+            border: none;
+            margin-right: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .btn-add { background: #22c55e; color: white; }
+        .btn-edit { background: #3b82f6; color: white; }
+        .btn-delete { background: #ef4444; color: white; }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2>Dashboard Situs Berita</h2>
+</header>
+
+<nav>
+    <button onclick="showPage('admin')">Admin</button>
+    <button onclick="showPage('guest')">Guest</button>
+</nav>
+
+<div class="container">
+
+    <!-- ✅ ADMIN -->
+    <div id="adminPage">
+        <div class="card">
+            <h3>Tambah Berita</h3>
+            <input type="text" id="title" placeholder="Judul berita">
+            <textarea id="content" placeholder="Isi berita"></textarea>
+            <button class="btn-add" onclick="addNews()">Tambah</button>
+        </div>
+
+        <div id="adminList"></div>
+    </div>
+
+    <!-- ✅ GUEST -->
+    <div id="guestPage" class="hidden">
+        <h3>Daftar Berita</h3>
+        <div id="guestList"></div>
+    </div>
+
+</div>
+
+<script>
+let berita = [];
+
+function render() {
+    const adminList = document.getElementById("adminList");
+    const guestList = document.getElementById("guestList");
+
+    adminList.innerHTML = "";
+    guestList.innerHTML = "";
+
+    berita.forEach((item, index) => {
+        // Admin view
+        adminList.innerHTML += `
+            <div class='card'>
+                <h4>${item.title}</h4>
+                <p>${item.content}</p>
+                <button class="action btn-edit" onclick="editNews(${index})">Edit</button>
+                <button class="action btn-delete" onclick="deleteNews(${index})">Hapus</button>
+            </div>
+        `;
+
+        // Guest view
+        guestList.innerHTML += `
+            <div class='card'>
+                <h4>${item.title}</h4>
+                <p>${item.content}</p>
+            </div>
+        `;
+    });
+}
+
+function addNews() {
+    const title = document.getElementById("title").value;
+    const content = document.getElementById("content").value;
+
+    if(title === "" || content === "") return alert("Isi semua field");
+
+    berita.push({title, content});
+    render();
+
+    document.getElementById("title").value = "";
+    document.getElementById("content").value = "";
+}
+
+function deleteNews(index) {
+    berita.splice(index, 1);
+    render();
+}
+
+function editNews(index) {
+    const newTitle = prompt("Edit judul:", berita[index].title);
+    const newContent = prompt("Edit isi:", berita[index].content);
+
+    if(newTitle && newContent){
+        berita[index].title = newTitle;
+        berita[index].content = newContent;
+        render();
+    }
+}
+
+function showPage(page) {
+    document.getElementById("adminPage").classList.add("hidden");
+    document.getElementById("guestPage").classList.add("hidden");
+
+    if(page === 'admin') {
+        document.getElementById("adminPage").classList.remove("hidden");
+    } else {
+        document.getElementById("guestPage").classList.remove("hidden");
+    }
+}
+</script>
+
+</body>
+</html>

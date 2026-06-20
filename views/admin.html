@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+<style>
+body { font-family: Arial; margin: 0; background: #f4f6f9; }
+header { background: #1e293b; color: white; padding: 15px; text-align: center; }
+.container { padding: 20px; }
+.card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+button { padding: 6px 10px; margin-right: 5px; border: none; cursor: pointer; }
+.add { background: green; color: white; }
+.edit { background: blue; color: white; }
+.delete { background: red; color: white; }
+</style>
+</head>
+<body>
+
+<header><h2>ADMIN DASHBOARD</h2></header>
+
+<div class="container">
+
+<div class="card">
+<h3>Tambah Berita</h3>
+<input type="text" id="title" placeholder="Judul"><br><br>
+<textarea id="content" placeholder="Isi berita"></textarea><br><br>
+<button class="add" onclick="add()">Tambah</button>
+</div>
+
+<div id="list"></div>
+
+</div>
+
+<script>
+let berita = [
+{title:"Berita 1", content:"Isi berita pertama"},
+{title:"Berita 2", content:"Isi berita kedua"},
+{title:"Berita 3", content:"Isi berita ketiga"},
+{title:"Berita 4", content:"Isi berita keempat"},
+{title:"Berita 5", content:"Isi berita kelima"},
+{title:"Berita 6", content:"Isi berita keenam"}
+];
+
+function render(){
+    let html = "";
+    berita.forEach((b,i)=>{
+        html += `
+        <div class="card">
+            <h4>${b.title}</h4>
+            <p>${b.content}</p>
+            <button class="edit" onclick="edit(${i})">Edit</button>
+            <button class="delete" onclick="hapus(${i})">Hapus</button>
+        </div>`;
+    });
+    document.getElementById("list").innerHTML = html;
+}
+
+function add(){
+    let t = document.getElementById("title").value;
+    let c = document.getElementById("content").value;
+    if(!t || !c) return alert("Isi dulu");
+    berita.push({title:t, content:c});
+    render();
+}
+
+function hapus(i){
+    berita.splice(i,1);
+    render();
+}
+
+function edit(i){
+    let t = prompt("Edit judul", berita[i].title);
+    let c = prompt("Edit isi", berita[i].content);
+    if(t && c){
+        berita[i].title = t;
+        berita[i].content = c;
+        render();
+    }
+}
+
+render();
+</script>
+
+</body>
+</html>
